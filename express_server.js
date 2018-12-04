@@ -11,8 +11,12 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//Testing routes
 app.get("/", (req, res) => {
   res.send("Hello!");
+});
+app.get("/hello", (req, res) => {
+  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.listen(PORT, () => {
@@ -24,38 +28,40 @@ app.get("/urls.json", (req, res) => {
   //res.send(urlDatabase);
 });
 
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
-});
-
 //page to display all urls
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
 });
 
+//page to add new URL
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+//page to display specific URL id details
 app.get("/urls/:id", (req, res) => {
-  let templateVars = { shortURL: req.params.id,
-                       urls: urlDatabase
-                     };
+  if (urlDatabase[req.params.id]) {
+    let templateVars =  { shortURL: req.params.id,
+                          urls: urlDatabase
+                        };
   res.render("urls_show", templateVars);
+  } else {
+    res.end("ID not found");
+  }
 });
 
+//Adds url to Database
 app.post("/urls", (req, res) => {
-  // console.log(req.body);  // debug statement to see POST parameters
   let randomURL = generateRandomString();
   urlDatabase[randomURL] = req.body.longURL;
-  //console.log(urlDatabase);
 
   res.redirect(`/urls/${randomURL}`);
 });
 
+//redirect shortened URLs to full url site
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = `/urls/${req.params.shortURL}`;
+  let longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
 
