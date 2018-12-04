@@ -19,7 +19,6 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-//added a new route!
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
   //res.send(urlDatabase);
@@ -47,14 +46,22 @@ app.get("/urls/:id", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // debug statement to see POST parameters
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  // console.log(req.body);  // debug statement to see POST parameters
+  let randomURL = generateRandomString();
+  urlDatabase[randomURL] = req.body.longURL;
+  console.log(urlDatabase);
+
+  let templateVars = { shortURL: randomURL,
+                       urls: urlDatabase
+                     };
+  res.render("urls_show", templateVars);
+  //res.send("Ok");
 });
 
 
 function generateRandomString() {
   let randoText = "";
-  let range = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  let range = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
   for(var i = 0; i < 6; i++){
     randoText += range.charAt(Math.floor(Math.random() * range.length));
   }
