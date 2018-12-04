@@ -49,15 +49,15 @@ app.post("/urls", (req, res) => {
   // console.log(req.body);  // debug statement to see POST parameters
   let randomURL = generateRandomString();
   urlDatabase[randomURL] = req.body.longURL;
-  console.log(urlDatabase);
+  //console.log(urlDatabase);
 
-  let templateVars = { shortURL: randomURL,
-                       urls: urlDatabase
-                     };
-  res.render("urls_show", templateVars);
-  //res.send("Ok");
+  res.redirect(`/urls/${randomURL}`);
 });
 
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = `/urls/${req.params.shortURL}`;
+  res.redirect(longURL);
+});
 
 function generateRandomString() {
   let randoText = "";
