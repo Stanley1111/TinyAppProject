@@ -6,7 +6,9 @@
 <body>
     <!-- Add your EJS code here -->
     <ul>
-      <li><%= shortURL%> : <%= urls[shortURL]%> </li>
+      <form action="/urls/<%= shortURL %>" method="POST">
+        <li><%= shortURL%> : <%= urls[shortURL]%> <input id="newURL" type="text" name="newURL" placeholder="New URL" style="margin-left: 30px"><button type='submit'>Update</button></li>
+      </form>
     </ul>
 </body>
 </html>

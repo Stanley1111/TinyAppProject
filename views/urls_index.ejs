@@ -6,12 +6,18 @@
 </head>
 <body>
   <!-- Add your EJS code here -->
-  <form method="POST" action=`/urls/9sm5xK/delete`>
-    <ul>
-      <% for(var i in urls) { %>
-      <li><%= i %> : <%= urls[i] %>  <button type='submit'>Delete</button> </li>
-      <% } %>
-    </ul>
-  </form>
+  <ul>
+    <% for(var i in urls) { %>
+      <li>
+        <form method="POST" action="/urls/<%= i %>/delete">
+          <%= i %> : <%= urls[i] %>
+          <a href="/urls/<%= i %>">Edit</a>
+          <button type='submit'>Delete</button>
+        </form>
+      </li>
+
+    <% } %>
+  </ul>
 </body>
 </html>
+
