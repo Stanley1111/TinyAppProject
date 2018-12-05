@@ -64,6 +64,12 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  //req.params.id
+  delete urlDatabase[req.params.id];
+  res.redirect('/urls');
+});
+
 function generateRandomString() {
   let randoText = "";
   let range = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

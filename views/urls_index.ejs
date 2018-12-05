@@ -5,10 +5,13 @@
   <% include ./partials/_header %>
 </head>
 <body>
-    <!-- Add your EJS code here -->
-    <% for(var i in urls) { %>
-    <li><%= i %> : <%= urls[i] %></li>
-    <% } %>
-
+  <!-- Add your EJS code here -->
+  <form method="POST" action=`/urls/9sm5xK/delete`>
+    <ul>
+      <% for(var i in urls) { %>
+      <li><%= i %> : <%= urls[i] %>  <button type='submit'>Delete</button> </li>
+      <% } %>
+    </ul>
+  </form>
 </body>
 </html>
