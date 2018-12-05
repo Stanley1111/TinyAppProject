@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
+// The body-parser library will allow us to access POST request parameters, such as req.body.longURL, which we will store in a variable called urlDatabase.
 const bodyParser = require("body-parser");
 
 app.use(bodyParser.urlencoded({extended: true}));
@@ -11,7 +12,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-//Testing routes
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -25,7 +25,6 @@ app.listen(PORT, () => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
-  //res.send(urlDatabase);
 });
 
 //page to display all urls
