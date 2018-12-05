@@ -1,2 +1,10 @@
+<title>A TITLE: TINY APP</title>
 
-  <title>A TITLE: TINY APP</title>
+<% if (!username) { %>
+<form method="POST" action="/login">
+  <input type="text" name="username">
+  <input type="submit" value="Submit">
+</form>
+<% } else { %>
+ <p><%= username %></p>
+<% } %>
