@@ -155,7 +155,7 @@ app.post("/urls", (req, res) => {
 
 //redirect shortened URLs to full url site
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL];
+  let longURL = urlDatabase[req.params.shortURL].url;
   res.redirect(longURL);
 });
 
