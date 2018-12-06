@@ -1,9 +1,12 @@
 const express = require("express");
-const app = express();
 const PORT = 8080; // default port 8080
 // The body-parser library will allow us to access POST request parameters, such as req.body.longURL, which we will store in a variable called urlDatabase.
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser')
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
+const app = express();
+
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
@@ -217,6 +220,8 @@ app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const newEmail = req.body.email;
   const newPass = req.body.password;
+  const hashedPassword = bcrypt.hashSync(newPass, 10);
+
   if(!newEmail || !newPass){
     res.send(400, "error: Empty email or password"); //error message???
 
@@ -228,7 +233,7 @@ app.post("/register", (req, res) => {
     const userObj = {
       id : userID,
       email : newEmail,
-      password : newPass
+      password : hashedPassword
     };
     users[userID] = userObj;
     //console.log(users);
