@@ -30,12 +30,12 @@ const users = {
   "12p00p" : {
     id : "12p00p",
     email : "poopie@gmail.com",
-    password : "password"
+    password : bcrypt.hashSync("password", 10)
   },
   "funk22" : {
     id : "funk22",
     email : "funky@gmail.com",
-    password : "abc"
+    password : bcrypt.hashSync("abc", 10)
   }
 };
 
@@ -65,7 +65,8 @@ function dupEmail(email){
 function validAccount(email, password){
   for(var i in users){
     if(users[i].email === email){
-      if (users[i].password === password) {
+      if (bcrypt.compareSync(password, users[i].password) ) {
+        console.log(users[i].password);
         return users[i];
       } else {
         return -1;
