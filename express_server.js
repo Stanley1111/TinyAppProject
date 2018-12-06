@@ -13,6 +13,19 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+const users = {
+  "123abc" : {
+    id : "123abc",
+    email : "poopie@gmail.com",
+    password : "password123"
+  },
+  "aaa111" : {
+    id : "aaa111",
+    email : "funkytown@gmail.com",
+    password : "codey123"
+  }
+};
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -92,6 +105,11 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
   res.redirect("/urls");
+});
+
+//route to the registration page
+app.get("/register", (req, res) => {
+  res.render("user_registration");
 });
 
 function generateRandomString() {
