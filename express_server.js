@@ -15,7 +15,7 @@ const urlDatabase = {
   },
   "9sm5xK": {
     url : "http://www.google.com",
-    userID : "aaa111"
+    userID : "funk22"
   }
 };
 
@@ -25,7 +25,7 @@ const users = {
     email : "poopie@gmail.com",
     password : "password123"
   },
-  "aaa111" : {
+  "funk22" : {
     id : "funk22",
     email : "funky@gmail.com",
     password : "codey123"
@@ -151,7 +151,11 @@ app.post("/urls/:id/delete", (req, res) => {
 
 //update/edit the url entry
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.newURL;
+  const user_id = req.cookies.user_id;
+  if (user_id === urlDatabase[req.params.id].userID){
+    urlDatabase[req.params.id].url = req.body.newURL;
+  }
+
   res.redirect('/urls');
 });
 
