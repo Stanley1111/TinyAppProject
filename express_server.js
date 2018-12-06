@@ -9,8 +9,14 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  "b2xVn2": {
+    url : "http://www.lighthouselabs.ca",
+    userID : "123abc"
+  },
+  "9sm5xK": {
+    url : "http://www.google.com",
+    userID : "aaa111"
+  }
 };
 
 const users = {
@@ -20,8 +26,8 @@ const users = {
     password : "password123"
   },
   "aaa111" : {
-    id : "aaa111",
-    email : "funkytown@gmail.com",
+    id : "funk22",
+    email : "funky@gmail.com",
     password : "codey123"
   }
 };
@@ -115,8 +121,15 @@ app.get("/urls/:id", (req, res) => {
 
 //ADD URL Handler url to Database
 app.post("/urls", (req, res) => {
-  let randomURL = generateRandomString();
-  urlDatabase[randomURL] = req.body.longURL;
+  const randomURL = generateRandomString();
+  const fullURL = req.body.longURL;
+  const userID = req.cookies.user_id;
+  const urlObj =  { url : fullURL,
+                    userID : userID
+                  };
+  urlDatabase[randomURL] = urlObj;
+
+  console.log(urlDatabase);
   res.redirect(`/urls/${randomURL}`);
 });
 
@@ -126,9 +139,13 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
-//delete a url entry
+//DELETE an url entry only if user created the URL
 app.post("/urls/:id/delete", (req, res) => {
-  delete urlDatabase[req.params.id];
+  const user_id = req.cookies.user_id;
+  if (user_id === urlDatabase[req.params.id].userID){
+    delete urlDatabase[req.params.id];
+  }
+
   res.redirect('/urls');
 });
 
