@@ -26,6 +26,16 @@ const users = {
   }
 };
 
+//Helper Functions
+function generateRandomString() {
+  let randoText = "";
+  let range = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  for(var i = 0; i < 6; i++){
+    randoText += range.charAt(Math.floor(Math.random() * range.length));
+  }
+  return randoText;
+}
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -112,13 +122,40 @@ app.get("/register", (req, res) => {
   res.render("user_registration");
 });
 
-function generateRandomString() {
-  let randoText = "";
-  let range = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  for(var i = 0; i < 6; i++){
-    randoText += range.charAt(Math.floor(Math.random() * range.length));
+//handle registration form data
+app.post("/register", (req, res) => {
+  const userID = generateRandomString();
+  const newEmail = req.body.email;
+  const newPass = req.body.password;
+  if(!newEmail || !newPass){
+    res.send(400, "error: Empty email or password"); //error message???
+
+  } else if (dupEmail(newEmail)){
+    res.send(400, "error: Duplicate Email"); //error message???
+
+  } else {
+    //generate new user object and add to user db
+    const userObj = {
+      id : userID,
+      email : newEmail,
+      password : newPass
+    };
+    users[userID] = userObj;
+    console.log(users);
+    res.cookie("user_id", userID);
+    res.redirect("/urls");
   }
-  return randoText;
+
+});
+
+//Return TRUE if duplicate email found in user db
+function dupEmail(email){
+  for(var i in users){
+    if(users[i].email === email){
+      return true;
+    }
+  }
+  return false;
 }
 
 
