@@ -131,7 +131,7 @@ app.post("/urls/:id", (req, res) => {
   res.redirect('/urls');
 });
 
-//login handler: respond with a cookie with the entered 'username'
+//LOGIN handler
 app.post("/login", (req, res) => {
   //get email and password
   const {email, password} = req.body;
