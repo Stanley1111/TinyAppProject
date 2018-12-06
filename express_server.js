@@ -62,6 +62,10 @@ function validAccount(email, password){
   return 0;
 }
 
+app.listen(PORT, () => {
+  console.log(`Example app listening on port ${PORT}!`);
+});
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -69,9 +73,6 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
-});
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -85,12 +86,18 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//page to add new URL
+//Route to page to add URLs
 app.get("/urls/new", (req, res) => {
-  let templateVars = {  urls: urlDatabase,
-                        user: users[req.cookies.user_id]
-                      };
-  res.render("urls_new", templateVars);
+  const user_id = req.cookies.user_id;
+  if(user_id){
+    let templateVars = {  urls: urlDatabase,
+                          user: users[req.cookies.user_id]
+                        };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
+
 });
 
 //page to display specific URL id details
@@ -106,7 +113,7 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-//Adds url to Database
+//ADD URL Handler url to Database
 app.post("/urls", (req, res) => {
   let randomURL = generateRandomString();
   urlDatabase[randomURL] = req.body.longURL;
