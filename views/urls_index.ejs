@@ -7,6 +7,9 @@
 </head>
 <body>
   <!-- Add your EJS code here -->
+  <% if (!user) { %>
+    <p>Please Login or Register</p>
+  <% } %>
   <ul>
     <% for(var i in urls) { %>
       <li>

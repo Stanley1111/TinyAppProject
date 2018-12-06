@@ -4,11 +4,15 @@
    <% include partials/_header %>
 </head>
 <body>
-    <!-- Add your EJS code here -->
+  <!-- Add your EJS code here -->
+  <% if (!user) { %>
+    <p>Please Login or Register</p>
+  <% } else { %>
     <ul>
       <form action="/urls/<%= shortURL %>" method="POST">
-        <li><%= shortURL%> : <%= urls[shortURL].url%> <input id="newURL" type="text" name="newURL" placeholder="New URL" style="margin-left: 30px"><button type='submit'>Update</button></li>
+        <li><%= shortURL%> : <%= url%> <input id="newURL" type="text" name="newURL" placeholder="New URL" style="margin-left: 30px"><button type='submit'>Update</button></li>
       </form>
     </ul>
+  <% } %>
 </body>
 </html>

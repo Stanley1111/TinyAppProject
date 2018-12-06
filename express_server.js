@@ -11,24 +11,28 @@ app.set("view engine", "ejs");
 const urlDatabase = {
   "b2xVn2": {
     url : "http://www.lighthouselabs.ca",
-    userID : "123abc"
+    userID : "12p00p"
   },
   "9sm5xK": {
     url : "http://www.google.com",
+    userID : "funk22"
+  },
+  "zxcv12": {
+    url : "http://www.funkytown.com",
     userID : "funk22"
   }
 };
 
 const users = {
-  "123abc" : {
-    id : "123abc",
+  "12p00p" : {
+    id : "12p00p",
     email : "poopie@gmail.com",
-    password : "password123"
+    password : "password"
   },
   "funk22" : {
     id : "funk22",
     email : "funky@gmail.com",
-    password : "codey123"
+    password : "abc"
   }
 };
 
@@ -68,6 +72,17 @@ function validAccount(email, password){
   return 0;
 }
 
+//Return an object of urls associated with userID
+function userUrls (checkID){
+  let urls = {};
+  for (var i in urlDatabase){
+    if (urlDatabase[i].userID === checkID){
+      urls[i] = urlDatabase[i];
+    }
+  }
+  return urls;
+}
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
@@ -84,10 +99,14 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-//page to display all urls
+
+
+//page to display all urls associated with the user
 app.get("/urls", (req, res) => {
-  let templateVars = {  urls: urlDatabase,
-                        user: users[req.cookies.user_id]
+  const userID = req.cookies.user_id;
+  const tempUrlDB = userUrls(userID);
+  let templateVars = {  urls: tempUrlDB,
+                        user: users[userID]
                       };
   res.render("urls_index", templateVars);
 });
@@ -108,12 +127,13 @@ app.get("/urls/new", (req, res) => {
 
 //page to display specific URL id details
 app.get("/urls/:id", (req, res) => {
-  if (urlDatabase[req.params.id]) {
+
+  if (urlDatabase[req.params.id].userID === req.cookies.user_id) {
     let templateVars =  { shortURL: req.params.id,
-                          urls: urlDatabase,
+                          url: urlDatabase[req.params.id].url,
                           user: users[req.cookies.user_id]
                         };
-  res.render("urls_show", templateVars);
+    res.render("urls_show", templateVars);
   } else {
     res.end("ID not found");
   }
