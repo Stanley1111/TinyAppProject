@@ -46,6 +46,8 @@ function dupEmail(email){
   return false;
 }
 
+
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -115,10 +117,43 @@ app.post("/urls/:id", (req, res) => {
   res.redirect('/urls');
 });
 
+//Return 0 for invalid email
+//Return -1 for invalid password
+//Return User Object for matching email and password
+function validAccount(email, password){
+  for(var i in users){
+    if(users[i].email === email){
+      if (users[i].password === password) {
+        return users[i];
+      } else {
+        return -1;
+      }
+
+    }
+  }
+  return 0;
+}
+
 //login handler: respond with a cookie with the entered 'username'
 app.post("/login", (req, res) => {
-  res.cookie("user_id", req.body.user_id);
-  res.redirect('/urls');
+  //get email and password
+  const {email, password} = req.body;
+  const user = validAccount(email, password);
+
+  //match email to db
+  if (user === 0){
+    res.status(403).send("Invalid email");
+  }
+  //match password to db
+  else if (user === -1){
+    res.status(403).send("Invalid password");
+  }
+  else {
+    //respond with user_id cookie & redirect to '/'
+    res.cookie("user_id", user.id);
+    res.redirect('/');
+  }
+
 });
 
 //logout
