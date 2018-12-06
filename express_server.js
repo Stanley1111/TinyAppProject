@@ -46,7 +46,21 @@ function dupEmail(email){
   return false;
 }
 
-
+//Return 0 for invalid email
+//Return -1 for invalid password
+//Return User Object for matching email and password
+function validAccount(email, password){
+  for(var i in users){
+    if(users[i].email === email){
+      if (users[i].password === password) {
+        return users[i];
+      } else {
+        return -1;
+      }
+    }
+  }
+  return 0;
+}
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -117,23 +131,6 @@ app.post("/urls/:id", (req, res) => {
   res.redirect('/urls');
 });
 
-//Return 0 for invalid email
-//Return -1 for invalid password
-//Return User Object for matching email and password
-function validAccount(email, password){
-  for(var i in users){
-    if(users[i].email === email){
-      if (users[i].password === password) {
-        return users[i];
-      } else {
-        return -1;
-      }
-
-    }
-  }
-  return 0;
-}
-
 //login handler: respond with a cookie with the entered 'username'
 app.post("/login", (req, res) => {
   //get email and password
@@ -156,7 +153,7 @@ app.post("/login", (req, res) => {
 
 });
 
-//logout
+//logout handler
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/urls");
