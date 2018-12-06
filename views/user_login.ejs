@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-   <title>Tiny App - Registration</title>
+   <title>Tiny App - Login</title>
 </head>
 <body>
   <!-- Add your EJS code here -->
-  <h1>Registration</h1>
-  <form action="/register" method="POST">
+  <h1>Login</h1>
+  <% if (!user) { %>
+  <form method="POST" action="/login">
     <div>
       EMAIL: <input type="email" name="email" placeholder="Email" style="margin-left: 30px"><br>
       PASSWORD: <input type="password" name="password" placeholder="Password" style="margin-left: 30px">
     </div>
-    <div>
-      <button type='submit'>Register</button>
-    </div>
+    <input type="submit" value="Login">
   </form>
+  <% } else { %>
+    <p>
+      Welcome: <%= user.id %>
+      <form method="POST" action="/logout">
+        <button type='submit'>Logout</button>
+      </form>
+    </p>
+  <% } %>
 
 </body>
 </html>

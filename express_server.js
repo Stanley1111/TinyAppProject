@@ -36,6 +36,16 @@ function generateRandomString() {
   return randoText;
 }
 
+//Return TRUE if duplicate email found in user db
+function dupEmail(email){
+  for(var i in users){
+    if(users[i].email === email){
+      return true;
+    }
+  }
+  return false;
+}
+
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -54,7 +64,7 @@ app.get("/urls.json", (req, res) => {
 //page to display all urls
 app.get("/urls", (req, res) => {
   let templateVars = {  urls: urlDatabase,
-                        username: req.cookies.username
+                        user: users[req.cookies.user_id]
                       };
   res.render("urls_index", templateVars);
 });
@@ -62,7 +72,7 @@ app.get("/urls", (req, res) => {
 //page to add new URL
 app.get("/urls/new", (req, res) => {
   let templateVars = {  urls: urlDatabase,
-                        username: req.cookies.username
+                        user: users[req.cookies.user_id]
                       };
   res.render("urls_new", templateVars);
 });
@@ -72,7 +82,7 @@ app.get("/urls/:id", (req, res) => {
   if (urlDatabase[req.params.id]) {
     let templateVars =  { shortURL: req.params.id,
                           urls: urlDatabase,
-                          username: req.cookies.username
+                          user: users[req.cookies.user_id]
                         };
   res.render("urls_show", templateVars);
   } else {
@@ -105,15 +115,15 @@ app.post("/urls/:id", (req, res) => {
   res.redirect('/urls');
 });
 
-//login: respond with a cookie withe the entered 'username'
+//login handler: respond with a cookie with the entered 'username'
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  res.cookie("user_id", req.body.user_id);
   res.redirect('/urls');
 });
 
 //logout
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
@@ -141,21 +151,19 @@ app.post("/register", (req, res) => {
       password : newPass
     };
     users[userID] = userObj;
-    console.log(users);
+    //console.log(users);
     res.cookie("user_id", userID);
     res.redirect("/urls");
   }
 
 });
 
-//Return TRUE if duplicate email found in user db
-function dupEmail(email){
-  for(var i in users){
-    if(users[i].email === email){
-      return true;
-    }
-  }
-  return false;
-}
+//Login Page
+app.get("/login", (req, res) => {
+  let templateVars = {  user: users[req.cookies.user_id]
+                      };
+  res.render("user_login", templateVars);
+});
+
 
 
