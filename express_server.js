@@ -3,12 +3,14 @@ const PORT = 8080; // default port 8080
 // The body-parser library will allow us to access POST request parameters, such as req.body.longURL, which we will store in a variable called urlDatabase.
 const bodyParser = require("body-parser");
 //const cookieParser = require('cookie-parser')
-const cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session');
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const methodOverride = require('method-override');
 
 const app = express();
 
+app.use(methodOverride('_method'));
 //app.use(cookieParser());
 app.use(cookieSession({
   name: 'session',
@@ -181,7 +183,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 //DELETE an url entry only if user created the URL
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id", (req, res) => {
   const user_id = req.session.user_id;
   if (user_id === urlDatabase[req.params.id].userID){
     delete urlDatabase[req.params.id];
@@ -190,8 +192,8 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect('/urls');
 });
 
-//update/edit the url entry
-app.post("/urls/:id", (req, res) => {
+//UPDATE the url entry
+app.put("/urls/:id", (req, res) => {
   const user_id = req.session.user_id;
   if (user_id === urlDatabase[req.params.id].userID){
     urlDatabase[req.params.id].url = req.body.newURL;
@@ -258,7 +260,6 @@ app.post("/register", (req, res) => {
       password : hashedPassword
     };
     users[userID] = userObj;
-    //console.log(users);
     req.session.user_id = userID;
     res.redirect("/urls");
   }

@@ -13,7 +13,7 @@
     <ul>
       <% for(var i in urls) { %>
         <li>
-          <form method="POST" action="/urls/<%= i %>/delete">
+          <form method="POST" action="/urls/<%= i %>?_method=DELETE">
             <%= i %> : <%= urls[i].url %>
             <a href="/urls/<%= i %>">Edit</a>
             <button type='submit'>Delete <i class="far fa-trash-alt"></i></button>
