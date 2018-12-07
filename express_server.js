@@ -2,12 +2,21 @@ const express = require("express");
 const PORT = 8080; // default port 8080
 // The body-parser library will allow us to access POST request parameters, such as req.body.longURL, which we will store in a variable called urlDatabase.
 const bodyParser = require("body-parser");
-const cookieParser = require('cookie-parser')
+//const cookieParser = require('cookie-parser')
+const cookieSession = require('cookie-session')
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+
 const app = express();
 
-app.use(cookieParser());
+//app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ["stan"],
+
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}))
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine", "ejs");
 
@@ -107,7 +116,7 @@ app.get("/urls.json", (req, res) => {
 
 //page to display all urls associated with the user
 app.get("/urls", (req, res) => {
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const tempUrlDB = userUrls(userID);
   let templateVars = {  urls: tempUrlDB,
                         user: users[userID]
@@ -117,10 +126,10 @@ app.get("/urls", (req, res) => {
 
 //Route to page to add URLs
 app.get("/urls/new", (req, res) => {
-  const user_id = req.cookies.user_id;
+  const user_id = req.session.user_id;
   if(user_id){
     let templateVars = {  urls: urlDatabase,
-                          user: users[req.cookies.user_id]
+                          user: users[req.session.user_id]
                         };
     res.render("urls_new", templateVars);
   } else {
@@ -132,10 +141,10 @@ app.get("/urls/new", (req, res) => {
 //page to display specific URL id details
 app.get("/urls/:id", (req, res) => {
 
-  if (urlDatabase[req.params.id].userID === req.cookies.user_id) {
+  if (urlDatabase[req.params.id].userID === req.session.user_id) {
     let templateVars =  { shortURL: req.params.id,
                           url: urlDatabase[req.params.id].url,
-                          user: users[req.cookies.user_id]
+                          user: users[req.session.user_id]
                         };
     res.render("urls_show", templateVars);
   } else {
@@ -147,13 +156,12 @@ app.get("/urls/:id", (req, res) => {
 app.post("/urls", (req, res) => {
   const randomURL = generateRandomString();
   const fullURL = req.body.longURL;
-  const userID = req.cookies.user_id;
+  const userID = req.session.user_id;
   const urlObj =  { url : fullURL,
                     userID : userID
                   };
   urlDatabase[randomURL] = urlObj;
 
-  console.log(urlDatabase);
   res.redirect(`/urls/${randomURL}`);
 });
 
@@ -165,7 +173,7 @@ app.get("/u/:shortURL", (req, res) => {
 
 //DELETE an url entry only if user created the URL
 app.post("/urls/:id/delete", (req, res) => {
-  const user_id = req.cookies.user_id;
+  const user_id = req.session.user_id;
   if (user_id === urlDatabase[req.params.id].userID){
     delete urlDatabase[req.params.id];
   }
@@ -175,7 +183,7 @@ app.post("/urls/:id/delete", (req, res) => {
 
 //update/edit the url entry
 app.post("/urls/:id", (req, res) => {
-  const user_id = req.cookies.user_id;
+  const user_id = req.session.user_id;
   if (user_id === urlDatabase[req.params.id].userID){
     urlDatabase[req.params.id].url = req.body.newURL;
   }
@@ -199,7 +207,7 @@ app.post("/login", (req, res) => {
   }
   else {
     //respond with user_id cookie & redirect to '/'
-    res.cookie("user_id", user.id);
+    req.session.user_id = user.id;
     res.redirect('/');
   }
 
@@ -207,7 +215,7 @@ app.post("/login", (req, res) => {
 
 //logout handler
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  req.session = null;
   res.redirect("/urls");
 });
 
@@ -238,7 +246,7 @@ app.post("/register", (req, res) => {
     };
     users[userID] = userObj;
     //console.log(users);
-    res.cookie("user_id", userID);
+    req.session.user_id = userID;
     res.redirect("/urls");
   }
 
@@ -246,7 +254,7 @@ app.post("/register", (req, res) => {
 
 //Login Page
 app.get("/login", (req, res) => {
-  let templateVars = {  user: users[req.cookies.user_id]
+  let templateVars = {  user: users[req.session.user_id]
                       };
   res.render("user_login", templateVars);
 });
