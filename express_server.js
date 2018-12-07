@@ -26,17 +26,20 @@ const urlDatabase = {
   "b2xVn2": {
     url : "http://www.lighthouselabs.ca",
     userID : "12p00p",
-    totalVisits : 0
+    totalVisits : 0,
+    uniqueVisits : 0
   },
   "9sm5xK": {
     url : "http://www.google.com",
     userID : "funk22",
-    totalVisits : 0
+    totalVisits : 0,
+    uniqueVisits : 0
   },
   "zxcv12": {
     url : "http://www.funkytown.com",
     userID : "funk22",
-    totalVisits : 0
+    totalVisits : 0,
+    uniqueVisits : 0
   }
 };
 
@@ -165,11 +168,12 @@ app.get("/urls/:id", (req, res) => {
 //CREATE URL Handler
 app.post("/urls", (req, res) => {
   const randomURL = generateRandomString();
-  const fullURL = req.body.longURL;
+  const fullURL = "http://" + req.body.longURL;
   const userID = req.session.user_id;
   const urlObj =  { url : fullURL,
                     userID : userID,
-                    totalVisits : 0
+                    totalVisits : 0,
+                    uniqueVisits : 0
                   };
   urlDatabase[randomURL] = urlObj;
 
@@ -178,9 +182,18 @@ app.post("/urls", (req, res) => {
 
 //Redirect shortened URLs to full url site
 app.get("/u/:shortURL", (req, res) => {
-  if (urlDatabase[req.params.shortURL]){
-    let longURL = urlDatabase[req.params.shortURL].url;
-    urlDatabase[req.params.shortURL].totalVisits++;
+  let url_id = req.params.shortURL;
+
+  //if short url exists
+  if (urlDatabase[url_id]){
+    let longURL = urlDatabase[url_id].url;
+    urlDatabase[url_id].totalVisits++;
+
+    //if unique visitor cookie tracking tag is not found
+    if (!req.session[url_id]){
+      req.session[url_id] = 1;
+      urlDatabase[url_id].uniqueVisits++;
+    }
     res.redirect(longURL);
   } else {
     res.status(404).send("URL not found");
@@ -202,6 +215,7 @@ app.put("/urls/:id", (req, res) => {
   const user_id = req.session.user_id;
   if (user_id === urlDatabase[req.params.id].userID){
     urlDatabase[req.params.id].url = req.body.newURL;
+    urlDatabase[req.params.id].totalVisits = 0;
   }
 
   res.redirect('/urls');
@@ -229,9 +243,9 @@ app.post("/login", (req, res) => {
 
 });
 
-//logout handler
+//LOGOUT handler
 app.post("/logout", (req, res) => {
-  req.session = null;
+  req.session.user_id = null;
   res.redirect("/urls");
 });
 
@@ -244,7 +258,7 @@ app.get("/register", (req, res) => {
   }
 });
 
-//handle registration form data
+//REGISTRATION HANDLER form data
 app.post("/register", (req, res) => {
   const userID = generateRandomString();
   const newEmail = req.body.email;
