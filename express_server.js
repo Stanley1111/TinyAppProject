@@ -119,7 +119,7 @@ app.get("/urls.json", (req, res) => {
 
 
 
-//page to display all urls associated with the user
+//Route DISPLAY ALL urls associated with the user
 app.get("/urls", (req, res) => {
   const userID = req.session.user_id;
   const tempUrlDB = userUrls(userID);
@@ -143,7 +143,7 @@ app.get("/urls/new", (req, res) => {
 
 });
 
-//page to display specific URL id details
+//Route DISPLAY SPECIFIC URL id details
 app.get("/urls/:id", (req, res) => {
 
   if (urlDatabase[req.params.id].userID === req.session.user_id) {
@@ -170,10 +170,14 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${randomURL}`);
 });
 
-//redirect shortened URLs to full url site
+//Redirect shortened URLs to full url site
 app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].url;
-  res.redirect(longURL);
+  if (urlDatabase[req.params.shortURL]){
+    let longURL = urlDatabase[req.params.shortURL].url;
+    res.redirect(longURL);
+  } else {
+    res.status(404).send("URL not found");
+  }
 });
 
 //DELETE an url entry only if user created the URL
@@ -204,7 +208,7 @@ app.post("/login", (req, res) => {
 
   //match email to db
   if (user === 0){
-    res.status(403).send("Invalid email");
+    res.status(403).send("Email not found");
   }
   //match password to db
   else if (user === -1){
@@ -226,7 +230,11 @@ app.post("/logout", (req, res) => {
 
 //route to the registration page
 app.get("/register", (req, res) => {
-  res.render("user_registration");
+  if (req.session.user_id){
+    res.redirect("/urls");
+  } else {
+    res.render("user_registration");
+  }
 });
 
 //handle registration form data
@@ -237,10 +245,10 @@ app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(newPass, 10);
 
   if(!newEmail || !newPass){
-    res.send(400, "error: Empty email or password"); //error message???
+    res.status(401).send("error: Empty email or password"); //error message???
 
   } else if (dupEmail(newEmail)){
-    res.send(400, "error: Duplicate Email"); //error message???
+    res.status(409).send("error: Duplicate Email"); //error message???
 
   } else {
     //generate new user object and add to user db
@@ -259,9 +267,13 @@ app.post("/register", (req, res) => {
 
 //Login Page
 app.get("/login", (req, res) => {
-  let templateVars = {  user: users[req.session.user_id]
-                      };
-  res.render("user_login", templateVars);
+  if (req.session.user_id){
+    res.redirect("/urls");
+  } else {
+    let templateVars = {  user: users[req.session.user_id]
+                        };
+    res.render("user_login", templateVars);
+  }
 });
 
 
