@@ -9,19 +9,21 @@
   <!-- Add your EJS code here -->
   <% if (!user) { %>
     <p>Please Login or Register</p>
+  <% } else {%>
+    <ul>
+      <% for(var i in urls) { %>
+        <li>
+          <form method="POST" action="/urls/<%= i %>/delete">
+            <%= i %> : <%= urls[i].url %>
+            <a href="/urls/<%= i %>">Edit</a>
+            <button type='submit'>Delete <i class="far fa-trash-alt"></i></button>
+          </form>
+        </li>
+      <% } %>
+    </ul>
+    <br>
+    <a href="/urls/new">Create a New Short Link</a>
   <% } %>
-  <ul>
-    <% for(var i in urls) { %>
-      <li>
-        <form method="POST" action="/urls/<%= i %>/delete">
-          <%= i %> : <%= urls[i].url %>
-          <a href="/urls/<%= i %>">Edit</a>
-          <button type='submit'>Delete <i class="far fa-trash-alt"></i></button>
-        </form>
-      </li>
-
-    <% } %>
-  </ul>
 </body>
 </html>
 

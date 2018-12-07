@@ -75,7 +75,7 @@ function validAccount(email, password){
   for(var i in users){
     if(users[i].email === email){
       if (bcrypt.compareSync(password, users[i].password) ) {
-        console.log(users[i].password);
+
         return users[i];
       } else {
         return -1;
@@ -101,8 +101,13 @@ app.listen(PORT, () => {
 });
 
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  if (req.session.user_id){
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
 });
+
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
