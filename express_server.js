@@ -25,15 +25,18 @@ app.set("view engine", "ejs");
 const urlDatabase = {
   "b2xVn2": {
     url : "http://www.lighthouselabs.ca",
-    userID : "12p00p"
+    userID : "12p00p",
+    totalVisits : 0
   },
   "9sm5xK": {
     url : "http://www.google.com",
-    userID : "funk22"
+    userID : "funk22",
+    totalVisits : 0
   },
   "zxcv12": {
     url : "http://www.funkytown.com",
-    userID : "funk22"
+    userID : "funk22",
+    totalVisits : 0
   }
 };
 
@@ -150,7 +153,7 @@ app.get("/urls/:id", (req, res) => {
 
   if (urlDatabase[req.params.id].userID === req.session.user_id) {
     let templateVars =  { shortURL: req.params.id,
-                          url: urlDatabase[req.params.id].url,
+                          urlObj: urlDatabase[req.params.id],
                           user: users[req.session.user_id]
                         };
     res.render("urls_show", templateVars);
@@ -159,13 +162,14 @@ app.get("/urls/:id", (req, res) => {
   }
 });
 
-//ADD URL Handler url to Database
+//CREATE URL Handler
 app.post("/urls", (req, res) => {
   const randomURL = generateRandomString();
   const fullURL = req.body.longURL;
   const userID = req.session.user_id;
   const urlObj =  { url : fullURL,
-                    userID : userID
+                    userID : userID,
+                    totalVisits : 0
                   };
   urlDatabase[randomURL] = urlObj;
 
@@ -176,6 +180,7 @@ app.post("/urls", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL]){
     let longURL = urlDatabase[req.params.shortURL].url;
+    urlDatabase[req.params.shortURL].totalVisits++;
     res.redirect(longURL);
   } else {
     res.status(404).send("URL not found");

@@ -10,8 +10,9 @@
   <% } else { %>
     <ul>
       <form action="/urls/<%= shortURL %>?_method=PUT" method="POST">
-        <li><%= shortURL%> : <%= url%> <input id="newURL" type="text" name="newURL" placeholder="New URL" style="margin-left: 30px"><button type='submit'>Update</button></li>
+        <li><%= shortURL%> : <%= urlObj.url%> <input id="newURL" type="text" name="newURL" placeholder="New URL" style="margin-left: 30px"><button type='submit'>Update</button></li>
       </form>
+      <p>Total Visits: <%= urlObj.totalVisits%></p>
       <br>
       <a href="/urls">Back to your URL List</a>
     </ul>
